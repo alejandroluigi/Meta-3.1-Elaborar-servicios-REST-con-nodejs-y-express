@@ -17,6 +17,12 @@ return tareas;
 const obtenerPorId = (id) => {
 return tareas.find(tarea => tarea.id === id);
 };
+// Buscar tareas por título (parcial, case insensitive)
+const buscarPorTitulo = (textoBusqueda) => {
+  return tareas.filter(tarea =>
+    tarea.titulo.toLowerCase().includes(textoBusqueda.toLowerCase())
+  );
+};
 // Crear una nueva tarea
 const crear = (datosTarea) => {
 const nuevaTarea = {
@@ -61,6 +67,7 @@ return tareaEliminada;
 module.exports = {
 obtenerTodas,
 obtenerPorId,
+buscarPorTitulo,
 crear,
 actualizarCompleta,
 actualizarParcial,
