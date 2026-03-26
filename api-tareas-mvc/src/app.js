@@ -4,6 +4,7 @@
 
 const express = require('express');
 const tareaRoutes = require('./routes/tarea.routes');
+const cors = require('cors');
 
 const app = express();
 
@@ -47,6 +48,8 @@ const responderApp = (req, res, options = {}) => {
 
   return res.status(status).json(respuesta);
 };
+// Habilitar CORS
+app.use(cors());
 
 // Middleware para parsear JSON
 app.use(express.json());
