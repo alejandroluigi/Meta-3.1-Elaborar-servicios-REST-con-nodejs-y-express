@@ -3,8 +3,11 @@
  */
 
 const express = require('express');
-const tareaRoutes = require('./routes/tarea.routes');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const tareaRoutes = require('./routes/tarea.routes');
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
@@ -48,22 +51,32 @@ const responderApp = (req, res, options = {}) => {
 
   return res.status(status).json(respuesta);
 };
-// Habilitar CORS
-app.use(cors());
+
+// ⚠️ CORS para frontend con cookies
+app.use(cors({
+  origin: 'http://localhost:3001', // cambia si tu Vite usa otro puerto
+  credentials: true
+}));
+
+// Middleware para cookies
+app.use(cookieParser());
 
 // Middleware para parsear JSON
 app.use(express.json());
 
-// Middleware para parsear datos de formularios (opcional)
+// Middleware para parsear datos de formularios
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware de logging (opcional)
+// Middleware de logging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// Rutas API
+// Rutas API de autenticación
+app.use('/api/auth', authRoutes);
+
+// Rutas API de tareas (protegidas)
 app.use('/api/tareas', tareaRoutes);
 
 // Ruta de bienvenida
@@ -71,10 +84,15 @@ app.get('/', (req, res) => {
   return responderApp(req, res, {
     status: 200,
     success: true,
-    message: 'API de Tareas - Práctica MVC con Express',
+    message: 'API de Tareas con JWT + Cookies + CSRF',
     data: {
-      version: '1.0.0',
-      endpoints: {
+      version: '2.0.0',
+      auth: {
+        login: 'POST /api/auth/login',
+        verify: 'GET /api/auth/verify',
+        logout: 'POST /api/auth/logout'
+      },
+      tareas: {
         getAll: 'GET /api/tareas',
         search: 'GET /api/tareas/buscar?q=express',
         getById: 'GET /api/tareas/:id',
